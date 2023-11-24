@@ -3,8 +3,11 @@ const path = require('path')
 const {open}=require('sqlite')
 const sqlite3 = require('sqlite3')
 const dbPath = path.join(__dirname,'goodreads.db')
+const cors = require('cors')
 const app = express();
 app.use(express.json())
+
+app.use(cors())
 
 let db=null;
 
