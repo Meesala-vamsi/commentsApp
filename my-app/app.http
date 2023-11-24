@@ -1,0 +1,21 @@
+GET http://localhost:4000/books/2
+
+###
+
+POST http://localhost:4000/books/
+Content-Type: application/json
+
+{
+    "title":"Hulk And Avengers",
+    "authorId":"1",
+    "rating":"4.6",
+    "ratingCount":"9999999",
+    "reviewCount":"5769756",
+    "description":"A Great Action Movie related to saving the earth.",
+    "pages":"100",
+    "dateOfPublication":"August 2nd 2002",
+    "editionLanguage":"English",
+    "price":"900",
+    "onlineStores":"Amazon, Audible,Google play, Indigo,Abebooks"
+}
+###
