@@ -72,7 +72,7 @@ app.get('/',async(request,response)=>{
 })
 
 app.get('/books/',async(request,response)=>{
-    const {limit,offset,order_by,search,order} = request.query
+    const {limit=10,offset=0,order_by="book_id",search='',order="ASC"} = request.query
     const getDetailsQuery=`
     SELECT * FROM book
     WHERE title LIKE '%${search}%'
