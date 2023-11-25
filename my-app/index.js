@@ -71,5 +71,18 @@ app.get('/',async(request,response)=>{
     response.send(responseData)
 })
 
+app.get('/books/',async(request,response)=>{
+    const {limit,offset,order_by,search,order} = request.query
+    const getDetailsQuery=`
+    SELECT * FROM book
+    WHERE title LIKE '%${search}%'
+    ORDER BY  ${order_by} ${order}
+    LIMIT ${limit} OFFSET ${offset};
+    `
+
+    const getResponse = await db.all(getDetailsQuery);
+    response.send(getResponse)
+})
+
 initializeDB();
 
