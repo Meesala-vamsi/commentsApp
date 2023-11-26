@@ -22,6 +22,7 @@ Content-Type: application/json
 
 GET http://localhost:4000/books/?limit=3&offset=0&order_by=book_id&order=ASC
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1vaGFuIiwiaWF0IjoxNzAwOTg4Mzk5fQ.xTGkb_j2iAqbPaK167NqmBXjJaHjZJMBsyibC3w9EEk
+
 ###
 
 POST http://localhost:4000/usersLogin/
@@ -46,3 +47,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1va
     "username":"mohan",
     "password":"mohan123"
 }
+
+###
+
+GET http://localhost:4000/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1vaGFuIiwiaWF0IjoxNzAwOTg4Mzk5fQ.xTGkb_j2iAqbPaK167NqmBXjJaHjZJMBsyibC3w9EEk
+###

@@ -67,10 +67,29 @@ app.post('/books/',async(request,response)=>{
 })
 
 app.get('/',async(request,response)=>{
-    const getDetailsQuery = `SELECT * FROM book`
-
-    const responseData = await db.all(getDetailsQuery)
-    response.send(responseData)
+    let jwtToken;
+    const authHeader=request.headers['authorization']
+    if(authHeader===undefined){
+        response.status(401)
+        response.send("Invalid JWT token");
+    }else{
+        jwtToken=authHeader.split(' ')[1]
+        if(jwtToken===undefined){
+            response.status(401)
+            response.send("Invalid Jwt Token")
+        }else{
+            jwt.verify(jwtToken,'vamsi',async (error,user)=>{
+                if(error){
+                    response.status(401)
+                    response.send("Invalid JWT Token")
+                }else{
+                    const getDetailsQuery = `SELECT * FROM book`
+                    const responseData = await db.all(getDetailsQuery)
+                    response.send(responseData)
+                }
+            })
+        }
+    }
 })
 
 app.get('/books/',async(request,response)=>{
