@@ -4,6 +4,7 @@ const {open}=require('sqlite')
 const sqlite3 = require('sqlite3')
 const dbPath = path.join(__dirname,'goodreads.db')
 const cors = require('cors')
+const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const app = express();
 app.use(express.json())
@@ -74,15 +75,34 @@ app.get('/',async(request,response)=>{
 
 app.get('/books/',async(request,response)=>{
     const {limit=10,offset=0,order_by="book_id",search='',order="ASC"} = request.query
-    const getDetailsQuery=`
-    SELECT * FROM book
-    WHERE title LIKE '%${search}%'
-    ORDER BY  ${order_by} ${order}
-    LIMIT ${limit} OFFSET ${offset};
-    `
+    let jwtToken;
+    const authHeader = request.headers["authorization"]
+    if(authHeader!==undefined){
+        jwtToken=authHeader.split(" ")[1]
+        if(jwtToken!==undefined){
+            jwt.verify(jwtToken,"vamsi",async(error,user)=>{
+                if(error){
+                    response.status(401);
+                    response.send("Invalid JWT token")
+                }else{
+                    const getDetailsQuery=`
+                        SELECT * FROM book
+                        WHERE title LIKE '%${search}%'
+                        ORDER BY  ${order_by} ${order}
+                        LIMIT ${limit} OFFSET ${offset};
+                        `
 
-    const getResponse = await db.all(getDetailsQuery);
-    response.send(getResponse)
+                        const getResponse = await db.all(getDetailsQuery);
+                        response.send(getResponse)
+                }
+            })
+        }else{
+            response.status(401);
+            response.send("Invalid Access TOken")
+        }
+    }else{
+        response.status(401)
+    }
 })
 
 app.post('/usersLogin/',async(request,response)=>{
@@ -117,6 +137,23 @@ app.get('/usersLogin',async(request,response)=>{
 
     const responseData = await db.all(getDetailsQuery)
     response.send(responseData)
+})
+
+app.post('/login',async(request,response)=>{
+    const {username,password} = request.body 
+    const checkUsernameQuery = `SELECT * FROM user WHERE username='${username}'`
+    const getStatus=await db.get(checkUsernameQuery)
+    if(getStatus===undefined){
+        response.send("Username Does Not Exist");
+    }else{
+        const checkPassword = await bcrypt.compare(password,getStatus.password)
+        if(checkPassword===false){
+            response.send('Password is Incorrect');
+        }else{
+            const jwtToken=jwt.sign({username:username},'vamsi')
+            response.send({jwtToken})
+        }
+    }
 })
 
 initializeDB();
