@@ -4,6 +4,7 @@ const {open}=require('sqlite')
 const sqlite3 = require('sqlite3')
 const dbPath = path.join(__dirname,'goodreads.db')
 const cors = require('cors')
+const bcrypt = require('bcrypt')
 const app = express();
 app.use(express.json())
 
@@ -82,6 +83,40 @@ app.get('/books/',async(request,response)=>{
 
     const getResponse = await db.all(getDetailsQuery);
     response.send(getResponse)
+})
+
+app.post('/usersLogin/',async(request,response)=>{
+    const details = request.body
+    const {name,username,password,gender} = details
+    const checkUsernameQuery = `SELECT * FROM user WHERE username='${username}'`;
+    const hashedPassword=await bcrypt.hash(password,10);
+    console.log(hashedPassword)
+    const userStatus=await db.get(checkUsernameQuery)
+    if(userStatus===undefined){
+
+                const addQuery = `
+                    INSERT INTO user 
+                    (username,name,password,gender)
+                    VALUES (
+                        '${username}',
+                        '${name}',
+                        '${hashedPassword}',
+                        '${gender}'   
+                    )
+                `;
+                await db.run(addQuery)
+                response.send("User Created Successfully !!!")
+            
+    }else{
+        response.send('Username Already Exists!!')
+    }
+})
+
+app.get('/usersLogin',async(request,response)=>{
+    const getDetailsQuery = `SELECT * FROM user`
+
+    const responseData = await db.all(getDetailsQuery)
+    response.send(responseData)
 })
 
 initializeDB();

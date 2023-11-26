@@ -22,3 +22,17 @@ Content-Type: application/json
 
 GET http://localhost:4000/books/?limit=3&offset=0&order_by=book_id&order=ASC
 
+###
+
+POST http://localhost:4000/usersLogin/
+Content-Type: application/json
+
+{
+    "username":"mohan",
+    "name":"MohanKumar",
+    "password":"mohan123",
+    "gender":"Male"
+}
+
+###
+GET http://localhost:4000/usersLogin/
