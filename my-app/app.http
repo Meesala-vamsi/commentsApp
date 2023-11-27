@@ -1,9 +1,13 @@
-GET http://localhost:4000/books/
+GET http://localhost:4000/books/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1vaGFuIiwiaWF0IjoxNzAwOTg3NDQ3fQ.8MHQGAWDsSST3jcWdie8h9uUICmIMK8iqYAThiE54lI
+
 
 ###
 
 POST http://localhost:4000/books/
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1vaGFuIiwiaWF0IjoxNzAwOTg3NDQ3fQ.8MHQGAWDsSST3jcWdie8h9uUICmIMK8iqYAThiE54lI
+
 
 {
     "title":"Hulk And Avengers",
@@ -37,6 +41,9 @@ Content-Type: application/json
 
 ###
 GET http://localhost:4000/usersLogin/
+
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1vaGFuIiwiaWF0IjoxNzAwOTg3NDQ3fQ.8MHQGAWDsSST3jcWdie8h9uUICmIMK8iqYAThiE54lI
+
 ###
 
 POST http://localhost:4000/login

@@ -28,7 +28,32 @@ const initializeDB = async ()=>{
 }
 }
 
-app.get('/books/:id',async(request,response)=>{
+const middleware=(request,response,next)=>{
+    let jwtToken;
+    const authHeader=request.headers['authorization']
+    if(authHeader!==undefined){
+        jwtToken=authHeader.split(" ")[1]
+        if(jwtToken !== undefined){
+            jwt.verify(jwtToken,'vamsi',async(error,user)=>{
+                if(error){
+                    response.status(401);
+                    response.send("Invalid JWT Token")
+                }else{
+                    next()
+                }
+            })
+        }else{
+            response.status(401);
+            response.send("Invalid JWT Token")
+        }
+    }else{
+        response.status(401);
+        response.send("Invalid JWT Token")
+    }
+    
+}
+
+app.get('/books/:id',middleware,async(request,response)=>{
     const {params} = request;
     const {id} = params;
     const getDetailsQuery=`
@@ -38,7 +63,7 @@ app.get('/books/:id',async(request,response)=>{
     response.send(details)
 })
 
-app.post('/books/',async(request,response)=>{
+app.post('/books/',middleware,async(request,response)=>{
     const bookDetails=request.body
     const {title,authorId,rating,ratingCount,reviewCount,description,pages,dateOfPublication,editionLanguage,price,onlineStores} = bookDetails
     const addBooksQuery=`
@@ -66,62 +91,25 @@ app.post('/books/',async(request,response)=>{
     
 })
 
-app.get('/',async(request,response)=>{
-    let jwtToken;
-    const authHeader=request.headers['authorization']
-    if(authHeader===undefined){
-        response.status(401)
-        response.send("Invalid JWT token");
-    }else{
-        jwtToken=authHeader.split(' ')[1]
-        if(jwtToken===undefined){
-            response.status(401)
-            response.send("Invalid Jwt Token")
-        }else{
-            jwt.verify(jwtToken,'vamsi',async (error,user)=>{
-                if(error){
-                    response.status(401)
-                    response.send("Invalid JWT Token")
-                }else{
+app.get('/',middleware,async(request,response)=>{
+    
                     const getDetailsQuery = `SELECT * FROM book`
                     const responseData = await db.all(getDetailsQuery)
                     response.send(responseData)
-                }
-            })
-        }
-    }
+            
 })
 
-app.get('/books/',async(request,response)=>{
+app.get('/books/',middleware,async(request,response)=>{
     const {limit=10,offset=0,order_by="book_id",search='',order="ASC"} = request.query
-    let jwtToken;
-    const authHeader = request.headers["authorization"]
-    if(authHeader!==undefined){
-        jwtToken=authHeader.split(" ")[1]
-        if(jwtToken!==undefined){
-            jwt.verify(jwtToken,"vamsi",async(error,user)=>{
-                if(error){
-                    response.status(401);
-                    response.send("Invalid JWT token")
-                }else{
-                    const getDetailsQuery=`
-                        SELECT * FROM book
-                        WHERE title LIKE '%${search}%'
-                        ORDER BY  ${order_by} ${order}
-                        LIMIT ${limit} OFFSET ${offset};
-                        `
-
-                        const getResponse = await db.all(getDetailsQuery);
-                        response.send(getResponse)
-                }
-            })
-        }else{
-            response.status(401);
-            response.send("Invalid Access TOken")
-        }
-    }else{
-        response.status(401)
-    }
+    
+    const getDetailsQuery=`
+                SELECT * FROM book
+                WHERE title LIKE '%${search}%'
+                ORDER BY  ${order_by} ${order}
+                LIMIT ${limit} OFFSET ${offset};`
+            const getResponse = await db.all(getDetailsQuery);
+                response.send(getResponse)
+           
 })
 
 app.post('/usersLogin/',async(request,response)=>{
@@ -151,7 +139,7 @@ app.post('/usersLogin/',async(request,response)=>{
     }
 })
 
-app.get('/usersLogin',async(request,response)=>{
+app.get('/usersLogin',middleware,async(request,response)=>{
     const getDetailsQuery = `SELECT * FROM user`
 
     const responseData = await db.all(getDetailsQuery)
